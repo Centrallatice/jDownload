@@ -1,7 +1,7 @@
 /*
  * jDownload - A jQuery plugin to assist file downloads
  * Examples and documentation at: http://jdownloadplugin.com
- * Version: 1.4 (01/04/2011)
+ * Version: 1.4 (08/04/2011)
  * Copyright (c) 2010 Adam Chambers, Tim Myers
  * Licensed under the GNU General Public License v3: http://www.gnu.org/licenses/gpl.html
  * Requires: jQuery v1.4+ & jQueryUI 1.8+
@@ -92,7 +92,7 @@
 			dialog.html('<p>Fetching File...</p><img src="'+settings.root+'jdownload/loader.gif" alt="Loading" />');
 			
 			$.ajax({
-				type : 'POST',
+				type : 'GET',
 				url  : settings.root+'jdownload/jdownload.php',
 				data : 'action=download&path='+filePath,
 				error : function(XMLHttpRequest, textStatus, errorThrown) {
@@ -108,39 +108,42 @@
 						
 							if(settings.showfileInfo == true) {
 								
-								var url  = settings.root+'jdownload/jdownload.php?action=info&path='+filePath;
-							
-							
-								// get file information
-								$.getJSON(url, function(data) {
+								var url  = settings.root+'jdownload/jdownload.php';
 								
-									// Check to see if file is not allowed
-									if(data.error == 'denied'){
-									
-										// append new file info
-										dialog.html('<p class=\"jDownloadError\">This file type is not allowed.</p>');
-									
-									}else{
+								$.ajax({
+									url : url,
+									type : 'GET',
+									dataType : 'json',
+									data : 'action=info&path='+filePath,
+									success : function(data) {
 										
-										// parse JSON
-										var html  = "<div class=\"jDownloadInfo\">";
-										html += "<p><span>File Name:</span> "+data.filename+"</p>";
-										html += "<p><span>File Type:</span> "+data.filetype+"</p>";
-										html += "<p><span>File Size:</span> "+data.filesize+" KB</p>";
-										html += "</div>";
-									
-										// remove any old file info & error messages
-										$('.jDownloadInfo, .jDownloadError').remove();
-									
-										var desc = ($this.attr('title').length > 0) ? $this.attr('title') : 'Download the file now?';
-									
-										// append new file info
-										dialog.html('<p>'+desc+'</p>'+html);
+										// Check to see if file is not allowed
+										if(data.error == 'denied'){
 										
+											// append new file info
+											dialog.html('<p class=\"jDownloadError\">This file type is not allowed.</p>');
+										
+										}else{
+											
+											// parse JSON
+											var html  = "<div class=\"jDownloadInfo\">";
+											html += "<p><span>File Name:</span> "+data.filename+"</p>";
+											html += "<p><span>File Type:</span> "+data.filetype+"</p>";
+											html += "<p><span>File Size:</span> "+data.filesize+" KB</p>";
+											html += "</div>";
+										
+											// remove any old file info & error messages
+											$('.jDownloadInfo, .jDownloadError').remove();
+										
+											var desc = ($this.attr('title').length > 0) ? $this.attr('title') : 'Download the file now?';
+										
+											// append new file info
+											dialog.html('<p>'+desc+'</p>'+html);
+											
+										}
 									}
-									
-									
 								});
+							
 							}
 	
 						}
@@ -157,7 +160,7 @@
 		});
 		
 		/* Iniate download when value Ok is iniated via the dialog */
-		function start_download(i){
+		function start_download(i) {
 			
 			
 			// change iframe src to fieDownload.php with filePath as query string?? 
