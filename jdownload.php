@@ -1,9 +1,9 @@
 <?php
 	// initialise functions
-	if($_POST['action'] && $_POST['path']) {
+	if($_GET['action'] && $_GET['path']) {
 		
 		// Append full document root to provided file path
-		$file_path = $_SERVER['DOCUMENT_ROOT'].$_POST['path'];
+		$file_path = $_SERVER['DOCUMENT_ROOT'].$_GET['path'];
 		
 		if(!file_exists($file_path) || !is_file($file_path)) {
 			
@@ -42,7 +42,7 @@
 			$file_path = str_replace("%00", "", $file_path);
 			
 			// call appropriate function
-			switch($_POST['action']) {
+			switch($_GET['action']) {
 				case "download":
 					get_file($file_path);
 				break;
